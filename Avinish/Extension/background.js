@@ -60,24 +60,13 @@ function post(url){
 
 function httpGet(theUrl)
 {
-    console.log(theUrl)
-
-    return new Promise((res) => {
-        
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open( "GET", theUrl, true );
-        
-        xmlHttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                return res(xmlHttp.responseText);
-            }
-        };
-
-        xmlHttp.send();
-    })
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", theUrl, false );
+    xmlHttp.send();
+    return xmlHttp.responseText;
 }
 
-async function handle_youtube(url)
+function handle_youtube(url)
 {
     const result = url.split("v=")[1]
     if(!result)
@@ -87,19 +76,17 @@ async function handle_youtube(url)
         return;
     }   
     
-    const res = await httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=AIzaSyDusUCKg_Ja9WfFy7STOlyPZSnYxDkzl-8&type=video")
+    const res = httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=&type=video")
 
     const resJSON = JSON.parse(res)
     // console.log(resJSON)    
     const title = resJSON.items[0].snippet.title
     const catId = resJSON.items[0].snippet.categoryId
 
-    const catRes = await httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=AIzaSyDusUCKg_Ja9WfFy7STOlyPZSnYxDkzl-8&part=snippet&id="+catId)
+    const catRes = httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=&part=snippet&id="+catId)
 
     const catJSON = JSON.parse(catRes)
     const cat = catJSON.items[0].snippet.title
-
-    console.log(title, " ----- " + cat)
 
     if(youtubeAllowedtag.includes(cat))
     {
@@ -107,7 +94,7 @@ async function handle_youtube(url)
         post(youtubeUrl)
         return
     }
-
+    
     const youtubeUrl = decodeURIComponent('http://localhost:3001/youtube?title='+title+'&bool='+false)  
     post(youtubeUrl)
     return
@@ -133,11 +120,10 @@ function check(url)
         return
     }
         
-    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=at_w5oS9FmRsWooaojsNunHpF6G1lAuu&domainName="+encodeURI(domain)).then((res)=>{
+    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=&domainName="+encodeURI(domain)).then((res)=>{
         return res.json()
     }).then((data)=>{
 
-        
         const cat = data['categories']
 
         var ok = true;
