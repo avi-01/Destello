@@ -76,14 +76,14 @@ function handle_youtube(url)
         return;
     }   
     
-    const res = httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&type=video")
+    const res = httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=&type=video")
 
     const resJSON = JSON.parse(res)
     // console.log(resJSON)    
     const title = resJSON.items[0].snippet.title
     const catId = resJSON.items[0].snippet.categoryId
 
-    const catRes = httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&part=snippet&id="+catId)
+    const catRes = httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=&part=snippet&id="+catId)
 
     const catJSON = JSON.parse(catRes)
     const cat = catJSON.items[0].snippet.title
@@ -120,7 +120,7 @@ function check(url)
         return
     }
         
-    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=at_w5oS9FmRsWooaojsNunHpF6G1lAuu&domainName="+encodeURI(domain)).then((res)=>{
+    fetch("https://website-categorization-api.whoisxmlapi.com/api/v1?apiKey=&domainName="+encodeURI(domain)).then((res)=>{
         return res.json()
     }).then((data)=>{
 
