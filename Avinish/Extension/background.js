@@ -60,13 +60,24 @@ function post(url){
 
 function httpGet(theUrl)
 {
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", theUrl, false );
-    xmlHttp.send();
-    return xmlHttp.responseText;
+    console.log(theUrl)
+
+    return new Promise((res) => {
+        
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", theUrl, true );
+        
+        xmlHttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                return res(xmlHttp.responseText);
+            }
+        };
+
+        xmlHttp.send();
+    })
 }
 
-function handle_youtube(url)
+async function handle_youtube(url)
 {
     const result = url.split("v=")[1]
     if(!result)
@@ -76,17 +87,19 @@ function handle_youtube(url)
         return;
     }   
     
-    const res = httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&type=video")
+    const res = await httpGet("https://www.googleapis.com/youtube/v3/videos?part=snippet&id="+result+"&key=AIzaSyDusUCKg_Ja9WfFy7STOlyPZSnYxDkzl-8&type=video")
 
     const resJSON = JSON.parse(res)
     // console.log(resJSON)    
     const title = resJSON.items[0].snippet.title
     const catId = resJSON.items[0].snippet.categoryId
 
-    const catRes = httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=AIzaSyAa_7dOv2a4wNBtImGiI58sIyNhPoehPwk&part=snippet&id="+catId)
+    const catRes = await httpGet("https://www.googleapis.com/youtube/v3/videoCategories?key=AIzaSyDusUCKg_Ja9WfFy7STOlyPZSnYxDkzl-8&part=snippet&id="+catId)
 
     const catJSON = JSON.parse(catRes)
     const cat = catJSON.items[0].snippet.title
+
+    console.log(title, " ----- " + cat)
 
     if(youtubeAllowedtag.includes(cat))
     {
@@ -124,6 +137,7 @@ function check(url)
         return res.json()
     }).then((data)=>{
 
+        
         const cat = data['categories']
 
         var ok = true;
